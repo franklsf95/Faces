@@ -1,0 +1,109 @@
+
+<!-- saved from url=(0037)http://demo.jb51.net/js/2012/pubuliu/ -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<title>Faces</title>
+<link rel="stylesheet" href="__ROOT__/static/face/css/face.css">
+<script type="text/javascript" src="http://localhost/static/face/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="http://localhost/static/face/js/waterfall.js"></script>
+
+
+<script type="text/javascript">
+
+$(function(){
+    $("#photo_wall").waterfall({
+  	ajaxUrl         : "{:U('face/data')}",
+        ajaxParams      :{"count":20,"userId":30}, 	//ajax params. e.g. {"name":"chembo","loadPic":"10"}
+        ajaxCount       :1,                         //the total times of the ajax will run when scroll hits the bottom. default to 4.
+        block_class     :"ablock",                  //one block's width. default to ablock.
+        margin          :7,                         //the margin between two blocks. unit is the px. default to 3.
+        block_width     :210,                       //one block's width.
+        animate_duration:500                        //jquery animate duration. unit is the million-second. default to 1000.
+    });
+});
+</script>
+
+</head>
+
+<body>
+<div id="container">
+	
+	<div id="photo_wall">
+    	<volist name="p" id="p">
+        <div class='ablock' style='width: 210px; margin: 6px; padding-top: 15px; display: block;'>
+            <a target='_blank' href="{$p['link']}">
+                <img class='pic' src={$p['src']} width='180'>
+                <div style='width: 150px;padding-left:15px' class='names'>
+                    <a class='name'>{$p['name']}</a>
+                    <a class='school_name'>{$p['college']}</a>
+                </div>
+            </a>
+            <div style='width: 30px;padding-right:15px;' class='votes'>
+                    <a class='score' id="scores{$p['id']}" vote="{$p['likes']}">{$p['likes']}</a>
+            </div>
+            
+            
+            <div class='rating' style='width:210px' id="vote">
+            	<a href="#" class="like"  pid="{$p['id']}">我喜欢！</a>
+            <!--
+            <span><a href='#'>☆</a></span>
+            <span><a href='#'>☆</a></span>
+            <span><a href='#'>☆</a></span>
+            <span><a href='#'>☆</a></span>
+            <span><a href='#'>☆</a></span>
+            !-->
+            </div>
+            
+        </div>
+        </volist>
+    </div>
+    
+</div>
+<div id="loading"></div>
+<div id="nomore"></div>
+<script type="text/javascript">
+$(function(){
+		$("#vote a").each(function() {
+			$(this).click(function() {
+				
+			    var pid = $(this).attr('pid');
+				$(this).parent().removeClass('rating').addClass('rated');
+				$(this).parent().html('<a class="like">已喜欢！</a>')
+				var vote = $('#scores'+pid).attr('vote');
+				var number = parseInt(vote)+1;
+				$('#scores'+pid).html(number);
+				$.get(
+				      "{:U('face/vote')}", { pid: pid },
+					  function(data,status){
+							var msg = eval("("+data+")");
+							if(msg.status == 1){
+							}
+			          }
+				);
+				return false;
+		     });
+       });
+});
+$.fn.rate = $(function(){
+				
+			    var pid = $(this).attr('pid');
+				$(this).parent().removeClass('rating').addClass('rated');
+				$(this).parent().html('<a class="like">已喜欢！</a>')
+				var vote = $('#scores'+pid).attr('vote');
+				var number = parseInt(vote)+1;
+				$('#scores'+pid).html(number);
+				$.get(
+				      "{:U('face/vote')}", { pid: pid },
+					  function(data,status){
+							var msg = eval("("+data+")");
+							if(msg.status == 1){
+							}
+			          }
+				);
+				return false;
+});
+</script>
+</body>
+</html>
