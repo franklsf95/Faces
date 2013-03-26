@@ -5,22 +5,40 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <title>Faces</title>
-<link rel="stylesheet" href="__ROOT__/static/face/css/face.css">
-<script type="text/javascript" src="http://localhost/static/face/js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="http://localhost/static/face/js/waterfall.js"></script>
-
-
+<link rel="stylesheet" href="css/face.css">
+<link rel="stylesheet" href="css/jquery-editable.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/waterfall.js"></script>
+<script type="text/javascript" src="js/jquery.poshytip.min.js"></script>
+<script type="text/javascript" src="js/jquery-editable.js"></script>
 <script type="text/javascript">
 
 $(function(){
     $("#photo_wall").waterfall({
-  	ajaxUrl         : "{:U('face/data')}",
-        ajaxParams      :{"count":20,"userId":30}, 	//ajax params. e.g. {"name":"chembo","loadPic":"10"}
-        ajaxCount       :1,                         //the total times of the ajax will run when scroll hits the bottom. default to 4.
-        block_class     :"ablock",                  //one block's width. default to ablock.
-        margin          :7,                         //the margin between two blocks. unit is the px. default to 3.
-        block_width     :210,                       //one block's width.
-        animate_duration:500                        //jquery animate duration. unit is the million-second. default to 1000.
+      	ajaxUrl         : "{:U('face/data')}",
+            ajaxParams      :{"count":20,"userId":30}, 	//ajax params. e.g. {"name":"chembo","loadPic":"10"}
+            ajaxCount       :1,                         //the total times of the ajax will run when scroll hits the bottom. default to 4.
+            block_class     :"ablock",                  //one block's width. default to ablock.
+            margin          :7,                         //the margin between two blocks. unit is the px. default to 3.
+            block_width     :210,                       //one block's width.
+            animate_duration:500                        //jquery animate duration. unit is the million-second. default to 1000.
+    });
+    $.fn.editable.defaults.ajaxOptions = {type: "POST", dataType: "json"};
+
+    $(".xe").editable({
+        url: 'post.php',
+        mode: 'inline'
+    });
+    $("#submit").click(function() {
+        $(".xe").editable('submit', { 
+            url: 'post.php',
+            success: function(data) {
+                console.log("Data", data);
+            },
+            error: function(errors) {
+                console.log("Error", errors.responseText);
+            }
+        });
     });
 });
 </script>
@@ -29,24 +47,24 @@ $(function(){
 
 <body>
 <div id="container">
-	
 	<div id="photo_wall">
     	<volist name="p" id="p">
         <div class='ablock' style='width: 210px; margin: 6px; padding-top: 15px; display: block;'>
             <a target='_blank' href="{$p['link']}">
                 <img class='pic' src={$p['src']} width='180'>
                 <div style='width: 150px;padding-left:15px' class='names'>
-                    <a class='name'>{$p['name']}</a>
-                    <a class='school_name'>{$p['college']}</a>
+                    <a class='name xe' data-name="name" data-pk="1">张三</a>
+                    <a class='school_name xe' data-name="school_name" data-pk="1">Emory University</a>
                 </div>
             </a>
             <div style='width: 30px;padding-right:15px;' class='votes'>
-                    <a class='score' id="scores{$p['id']}" vote="{$p['likes']}">{$p['likes']}</a>
+                    <a class='score' id="scores{$p['id']}" vote="{$p['likes']}">10</a>
             </div>
             
             
             <div class='rating' style='width:210px' id="vote">
             	<a href="#" class="like"  pid="{$p['id']}">我喜欢！</a>
+                <button id="submit">Submit</button>
             <!--
             <span><a href='#'>☆</a></span>
             <span><a href='#'>☆</a></span>
